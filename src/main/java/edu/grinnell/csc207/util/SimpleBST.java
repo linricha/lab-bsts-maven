@@ -118,6 +118,7 @@ public class SimpleBST<K, V> implements SimpleMap<K, V> {
         // no equals since current would not be null then.
         prevNode.left = new BSTNode<K, V>(key, value);
       }
+      this.size++;
     }
     return prevVal;
   } // set(K, V)
@@ -240,8 +241,16 @@ public class SimpleBST<K, V> implements SimpleMap<K, V> {
    */
   @Override
   public void forEach(BiConsumer<? super K, ? super V> action) {
-    // STUB
+    forEachHelper(action, this.root);
   } // forEach
+
+  private void forEachHelper(BiConsumer<? super K, ? super V> action, BSTNode<K, V> node) {
+    if (node != null) {
+      action.accept(node.key,node.value);
+      forEachHelper(action, node.left);
+      forEachHelper(action, node.right);
+    } // if
+  } // forEachHelper
 
   // +----------------------+----------------------------------------
   // | Other public methods |
@@ -323,6 +332,7 @@ public class SimpleBST<K, V> implements SimpleMap<K, V> {
 
       Stack<BSTNode<K, V>> stack = new Stack<BSTNode<K, V>>();
       boolean initialized = false;
+      boolean stackMade = false;
 
       @Override
       public boolean hasNext() {
@@ -333,9 +343,32 @@ public class SimpleBST<K, V> implements SimpleMap<K, V> {
       @Override
       public BSTNode<K, V> next() {
         checkInit();
-        // STUB
+        BSTNode<K,V> current;
+
+        if (!stackMade) {
+          stackSetUp(stack.peek()); // setup with root
+          stackMade = true;
+        }
+
+        if (hasNext()) {
+          return stack.pop();
+        } // if
         return null;
       } // next();
+
+      private void stackSetUp(BSTNode<K, V> node) {
+        if (node != null) {
+          if (node.right != null) {
+            stack.push(node.right);
+            stackSetUp(node.right);
+          }
+          
+          if (node.left != null) {
+            stack.push(node.left);
+            stackSetUp(node.left);
+          }
+        }
+      }
 
       void checkInit() {
         if (!initialized) {
