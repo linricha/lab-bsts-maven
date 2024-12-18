@@ -274,43 +274,24 @@ public class SimpleBST<K, V> implements SimpleMap<K, V> {
 
   private void reUpdateTreeTwoChildren(BSTNode<K, V> current, BSTNode<K, V> prevNode, boolean isCurrentRightNode, boolean isRoot) {
     BSTNode<K, V> removedNode = current;
-    if (order.compare(current.left.key, current.right.key) > 0) { // left is greater
 
-        // reupdate connections
-        if (isRoot) {
-          this.root = current.left;
-        } else {
-          if (isCurrentRightNode) {
-            prevNode.right = current.left;
-          } else {
-            prevNode.left = current.left;
-          }
-        }
-
-        current = current.left;
-        while (current.right != null) { // go to rightmost side of current and attach right subtree
-          current = current.right;
-        }
-        current.right = removedNode.right;
-      } else { // right is greater
-
-        // reupdate connections
-        if (isRoot) {
-          this.root = current.right;
-        } else {
-          if (isCurrentRightNode) {
-            prevNode.right = current.right;
-          } else {
-            prevNode.left = current.right;
-          }
-        }
-
-        current = current.right;
-        while (current.left != null) { // go to leftmost side of current and attach left subtree
-          current = current.left;
-        }
-        current.left = removedNode.left;
+    // reupdate connections
+    if (isRoot) {
+      this.root = current.right;
+    } else {
+      if (isCurrentRightNode) {
+        prevNode.right = current.right;
+      } else {
+        prevNode.left = current.right;
       }
+    }
+
+    current = current.right;
+    while (current.left != null) { // go to leftmost side of current and attach left subtree
+      current = current.left;
+    }
+    current.left = removedNode.left;
+      
     }
   
 
