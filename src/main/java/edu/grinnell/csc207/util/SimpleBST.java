@@ -88,7 +88,7 @@ public class SimpleBST<K, V> implements SimpleMap<K, V> {
    * @throws NullPointerException if the key is null.
    */
   @Override
-  public V set(K key, V value) {
+  public V set(K key, V value) throws NullPointerException {
     if (key == null) {
       throw new NullPointerException();
     }
@@ -135,7 +135,7 @@ public class SimpleBST<K, V> implements SimpleMap<K, V> {
    * @throws NullPointerException if the key is null.
    */
   @Override
-  public V get(K key) {
+  public V get(K key) throws IndexOutOfBoundsException, NullPointerException {
     if (key == null) {
       throw new NullPointerException("null key");
     } // if
@@ -162,7 +162,30 @@ public class SimpleBST<K, V> implements SimpleMap<K, V> {
    */
   @Override
   public boolean containsKey(K key) {
-    return false;       // STUB
+    boolean hasKey = false;
+
+    // if (key == null) {
+    //   hasKey = false;
+    // }
+
+    BSTNode<K, V> current = this.root;
+    while (current != null && hasKey == false) {
+      if (order.compare(key, current.key) > 0) { // right
+
+        current = current.right;
+      } else if (order.compare(key, current.key) < 0){ // left
+
+        current = current.left;
+      } else { // = 0 i.e. found key
+        hasKey = true;
+      }
+    }
+
+    // if (current == null) {
+    //   hasKey = false;
+    // }
+  
+    return hasKey; 
   } // containsKey(K)
 
   /**
@@ -175,7 +198,7 @@ public class SimpleBST<K, V> implements SimpleMap<K, V> {
    * @throws NullPointerException if the key is null.
    */
   @Override
-  public V remove(K key) {
+  public V remove(K key) throws NullPointerException {
     if (key == null) {
       throw new NullPointerException();
     }
