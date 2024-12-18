@@ -96,7 +96,7 @@ public class SimpleBST<K, V> implements SimpleMap<K, V> {
     BSTNode<K,V> prevNode = this.root;
     BSTNode<K, V> current = this.root;
     V prevVal = null;
-    while (current != null) {
+    while (current != null && prevVal == null) {
       if (order.compare(key, current.key) > 0) { // right
         prevNode = current;
         current = current.right;
@@ -149,7 +149,7 @@ public class SimpleBST<K, V> implements SimpleMap<K, V> {
    */
   @Override
   public int size() {
-    return 0;           // STUB
+    return this.size; 
   } // size()
 
   /**
@@ -176,8 +176,120 @@ public class SimpleBST<K, V> implements SimpleMap<K, V> {
    */
   @Override
   public V remove(K key) {
-    return null;        // STUB
+    if (key == null) {
+      throw new NullPointerException();
+    }
+
+    V removedVal = null;
+
+    BSTNode<K,V> prevNode = this.root;
+    BSTNode<K, V> current = this.root;
+    boolean isCurrentRightNode = false;
+
+    // find node with key
+    // Stops when found or when there is none
+    while (removedVal == null && current != null) {
+      if (order.compare(key, current.key) > 0) { // right
+        prevNode = current;
+        current = current.right;
+        isCurrentRightNode = true;
+      } else if (order.compare(key, current.key) < 0){ // left
+        prevNode = current;
+        current = current.left;
+        isCurrentRightNode = false;
+      } else { // = 0 i.e. found key
+        removedVal = current.value;
+      }
+    }
+
+    if (current != null) { // there is a node to be removed
+
+      boolean isRoot = order.compare(prevNode.key, current.key) == 0;
+
+
+      if (current.right == null && current.left == null) { // leaf
+        if (isRoot) {
+          this.root = null;
+        } else {
+          if (isCurrentRightNode) { // current is right
+            prevNode.right = null;
+          } else { // current is left
+            prevNode.left = null;
+          }
+        }
+      } else if (current.right != null && current.left != null) { // two children
+        reUpdateTreeTwoChildren(current, prevNode, isCurrentRightNode, isRoot);
+      } else if (current.right != null) { // left is null
+        if (isRoot) {
+          this.root = current.right;
+        } else {
+          if (isCurrentRightNode) { // current is right
+            prevNode.right = current.right;
+          } else {
+            prevNode.left = current.right;
+          }
+        }
+      } else { // right is null
+        if (isRoot) {
+          this.root = current.left;
+        } else {
+          if (isCurrentRightNode) { // current is right
+            prevNode.right = current.left;
+          } else {
+            prevNode.left = current.left;
+          }
+        }
+      }
+    }
+    
+    if (removedVal != null) {
+      this.size--;
+    }
+
+    return removedVal;
   } // remove(K)
+
+  private void reUpdateTreeTwoChildren(BSTNode<K, V> current, BSTNode<K, V> prevNode, boolean isCurrentRightNode, boolean isRoot) {
+    BSTNode<K, V> removedNode = current;
+    if (order.compare(current.left.key, current.right.key) > 0) { // left is greater
+
+        // reupdate connections
+        if (isRoot) {
+          this.root = current.left;
+        } else {
+          if (isCurrentRightNode) {
+            prevNode.right = current.left;
+          } else {
+            prevNode.left = current.left;
+          }
+        }
+
+        current = current.left;
+        while (current.right != null) { // go to rightmost side of current and attach right subtree
+          current = current.right;
+        }
+        current.right = removedNode.right;
+      } else { // right is greater
+
+        // reupdate connections
+        if (isRoot) {
+          this.root = current.right;
+        } else {
+          if (isCurrentRightNode) {
+            prevNode.right = current.right;
+          } else {
+            prevNode.left = current.right;
+          }
+        }
+
+        current = current.right;
+        while (current.left != null) { // go to leftmost side of current and attach left subtree
+          current = current.left;
+        }
+        current.left = removedNode.left;
+      }
+    }
+  
 
   /**
    * Get an iterator for all of the keys in the map.

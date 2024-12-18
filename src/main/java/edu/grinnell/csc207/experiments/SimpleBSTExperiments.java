@@ -121,7 +121,7 @@ public class SimpleBSTExperiments {
     pen.println("Starting phase 2");
     addStrings(example, phase2);
     example.dump(pen);
-    pen.println();
+    pen.println("HI");
 
     removeExperiment(pen, example, "vicuna"); // leaf?
     removeExperiment(pen, example, "koala"); // middle?
